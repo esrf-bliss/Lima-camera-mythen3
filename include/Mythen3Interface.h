@@ -23,7 +23,7 @@
 #ifndef MYTHEN3INTERFACE_H
 #define MYTHEN3INTERFACE_H
 
-#include "HwInterface.h"
+#include "lima/HwInterface.h"
 #include "Mythen3Camera.h"
 
 using namespace std;

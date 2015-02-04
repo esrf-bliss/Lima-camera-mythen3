@@ -24,7 +24,7 @@
 #include <cmath>
 #include <pthread.h>
 #include <map>
-#include "Exceptions.h"
+#include "lima/Exceptions.h"
 #include "Mythen3Camera.h"
 
 using namespace lima;

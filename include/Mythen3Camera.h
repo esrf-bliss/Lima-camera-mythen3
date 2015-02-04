@@ -24,11 +24,11 @@
 #define MYTHEN3CAMERA_H
 
 #include <map>
-#include "Debug.h"
-#include "Constants.h"
-#include "HwMaxImageSizeCallback.h"
-#include "HwBufferMgr.h"
-#include "ThreadUtils.h"
+#include "lima/Debug.h"
+#include "lima/Constants.h"
+#include "lima/HwMaxImageSizeCallback.h"
+#include "lima/HwBufferMgr.h"
+#include "lima/ThreadUtils.h"
 #include "Mythen3Net.h"
 
 namespace lima {

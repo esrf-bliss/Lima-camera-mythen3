@@ -25,9 +25,9 @@
 #include <signal.h>
 
 #include "Mythen3Net.h"
-#include "ThreadUtils.h"
-#include "Exceptions.h"
-#include "Debug.h"
+#include "lima/ThreadUtils.h"
+#include "lima/Exceptions.h"
+#include "lima/Debug.h"
 
 using namespace std;
 using namespace lima;

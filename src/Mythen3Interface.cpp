@@ -21,7 +21,7 @@
 //###########################################################################
 
 #include <algorithm>
-#include "Debug.h"
+#include "lima/Debug.h"
 #include "Mythen3Interface.h"
 
 using namespace lima;
