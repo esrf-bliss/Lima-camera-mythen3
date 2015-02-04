@@ -101,7 +101,6 @@ public:
 		RISING_EDGE,   ///< active high
 		FALLING_EDGE,  ///< active low
 	};
-	ostream& operator <<(ostream& os, Camera::Polarity polarity);
 
 	enum Switch {
 		OFF,   ///< disable
@@ -119,7 +118,6 @@ public:
 		Cr,  ///< kthreshEnergy(8.74,17.48)
 		Ag,  ///< kthreshEnergy(11.08,22.16)
 	};
-	ostream& operator <<(ostream& os, Camera::Polarity polarity);
 
 	void getAssemblyDate(string& date);
 	void getBadChannels(int *badChannels, int len);
@@ -234,6 +232,8 @@ private:
 	static std::map<ServerCmd, std::string> setServerCmdMap;
 
 };
+std::ostream& operator <<(std::ostream& os, Camera::Polarity const &polarity);
+std::ostream& operator <<(std::ostream& os, Camera::Settings const &settings);
 
 } // namespace Mythen3
 } // namespace Lima

@@ -49,195 +49,6 @@ private:
 	Camera& m_cam;
 };
 
-//Camera::CameraThread::CameraThread(Camera& cam)
-//	: m_cam(&cam)
-//{
-//
-//  m_cam->m_acq_frame_nb = 0;
-//  m_force_stop = false;
-//
-//}
-//
-//void Camera::CameraThread::start()
-//{
-//  CmdThread::start();
-//  waitStatus(Ready);
-//
-//}
-//
-//void Camera::CameraThread::init()
-//{
-//  setStatus(Ready);
-//}
-//
-//void Camera::CameraThread::execCmd(int cmd)
-//{
-//  int status = getStatus();
-//  switch (cmd) {
-//  case StartAcq:
-//    if (status != Ready && !m_cam->RBusyFlag)
-//      throw LIMA_HW_EXC(InvalidValue,  "Not Ready to StartAcq");
-//    execStartAcq();
-//    break;
-//  case StartStartAcq:
-//    if (status != Ready && !m_cam->ACBusyFlag  && !m_cam->RBusyFlag)
-//      throw LIMA_HW_EXC(InvalidValue,  "Not Ready to StartStartAcq");
-//    execStartStartAcq();
-//    break;
-//  case Refresh:
-//    if (status != Ready && !m_cam->ACBusyFlag && !m_cam->RBusyFlag)
-//      throw LIMA_HW_EXC(InvalidValue,  "Not Ready to StartStartAcq");
-//    execRefresh();
-//    break;
-//  }
-//}
-//
-//
-//void Camera::CameraThread::execStartAcq()
-//{
-//  int acq_frame_nb;
-//
-//  struct stat stFileInfo;
-//  bool blnReturn;
-//  int intStat;
-//
-//  char file_to_open[20] = "\0";
-//  char cmd[100] = "\0";
-//
-//  setStatus(Exposure);
-//
-//  StdBufferCbMgr& buffer_mgr = m_cam->m_buffer_ctrl_obj.getBuffer();
-//  buffer_mgr.setStartTimestamp(Timestamp::now());
-//
-//  int nb_frames = m_cam->m_nb_frames;
-//
-//
-//  int& frame_nb = m_cam->m_acq_frame_nb;
-//
-//  m_cam->m_acq_frame_nb = 0;
-//
-//
-//  acq_frame_nb = 0;
-//
-//  while( nb_frames ) {
-//
-//    if(m_force_stop){
-//	m_force_stop = false;
-//	setStatus(Ready);
-//	goto stop;
-//    }
-//
-//    setStatus(Readout);
-//
-//    sprintf(file_to_open, "%s/%s_%d.raw", m_cam->m_out_dir.c_str(},m_cam->m_out_filename.c_str(}, m_cam->m_out_fileindex + acq_frame_nb);
-//
-//
-//    intStat = 1;
-//    while(intStat){
-//      intStat = stat(file_to_open,&stFileInfo);
-//    }
-//
-//    printf("File %s found \n", file_to_open);
-//
-//    if(m_cam->cam_sim_mode){ // que pasa en no simulation mode ???
-//      printf("File in progress %d acq_frame_nb + 1 %d \n", m_cam->m_file_in_progress, acq_frame_nb + 1);
-//      while ( !(m_cam->m_file_in_progress > acq_frame_nb + 1) ) { // wait until file is finished
-//	usleep(100);
-//      }
-//    }
-//
-//    ifstream myfile;
-//    myfile.open(file_to_open);
-//
-//    unsigned int idx;
-//    int nmax;
-//    unsigned long tmpdat;
-//    char line[128];
-//
-//    while (myfile.good()) {
-//      myfile.getline(line, 128); // Read a line (man 256 char's)
-//      sscanf(line, "%d %d", &idx, &tmpdat); // Get index and data from current line
-//      if (idx>=0 && idx<nmax) m_cam->m_data[idx]=tmpdat; // Copy data to the array
-//    }
-//    myfile.close();
-//
-//    printf("File in progress %d \n", m_cam->m_file_in_progress);
-//    if( !m_cam->cam_sim_mode || (m_cam->m_file_in_progress > acq_frame_nb + 1) ){
-//      sprintf(cmd, "rm -rf %s", file_to_open);
-//      system(cmd);
-//      printf("File %s removed \n", file_to_open);
-//    }
-//
-//    // This part is necessary for sending the data for further Lima processing (saving files ...)
-//
-//    unsigned long *ptr = (unsigned long*)buffer_mgr.getFrameBufferPtr(frame_nb);
-//
-//    memcpy(ptr,m_cam->m_data,m_cam->m_size/sizeof(unsigned long)+1);
-//
-//    buffer_mgr.setStartTimestamp(Timestamp::now());
-//
-//
-//    HwFrameInfoType frame_info;
-//    // This set is necessary for telling Lima when the acquisition has finished
-//    frame_info.acq_frame_nb = acq_frame_nb;
-//    buffer_mgr.newFrameReady(frame_info);
-//
-//    m_cam->m_acq_frame_nb = acq_frame_nb;
-//
-//    acq_frame_nb++;
-//    nb_frames--;
-//
-//
-//  } /* End while */
-//
-// stop:
-//
-//  //  if( m_cam->m_frame ) free( m_cam->m_frame );
-//
-//  m_cam->setBusyFlag(false);
-//  m_cam->ACBusyFlag = false;
-//
-//  setStatus(Ready);
-//}
-//
-//void Camera::CameraThread::execStartStartAcq()
-//{
-//
-//
-//  FILE *data;
-//  if( !m_cam->cam_sim_mode ){
-//
-//    mythenDetector myDetector(m_cam->m_detector_id);
-//    char **myArgs;
-//    myDetector.executeLine(0, (char **)myArgs, READOUT_ACTION);
-//
-//  }else{
-//    int nb_frames = m_cam->m_nb_frames;
-//    int save_nb_frames = m_cam->m_nb_frames;
-//    double req_time;
-//    req_time = m_cam->m_exposure;
-//    while(nb_frames > 0){
-//      char s[1000] = "\0";
-//      nb_frames--;
-//      m_cam->m_file_in_progress = save_nb_frames - nb_frames;
-//      sprintf(s,"%s_%d.raw",m_cam->m_out_filename.c_str(},m_cam->m_out_fileindex - 1 + save_nb_frames - nb_frames);
-//      if (req_time > 0) {
-//	usleep(long(req_time * 1e6));
-//      }
-//      for(int i = 0; i < 30720; i++){
-//	m_cam->m_data[i]= i;
-//      }
-//      data = fopen(s,"w");
-//      for(int i = 0; i < 30720; i++){
-//	fprintf(data, "%d %d \n", i, m_cam->m_data[i]);
-//      }
-//      fclose( data );
-//      m_cam->m_file_in_progress = save_nb_frames - nb_frames + 1;
-//
-//    }
-//  }
-//
-//}
 
 Camera::Camera(std::string hostname, int tcpPort, int npixels, bool simulate) :
 	m_hostname(hostname), m_tcpPort(tcpPort), m_npixels(npixels), m_nrasters(1), m_simulated(simulate),
@@ -272,8 +83,7 @@ void Camera::reset() {
 	DEB_MEMBER_FUNCT();
 	stopAcq();
 	resetMythen();
-//TODO change to Bpp24 when available
-	m_image_type = Bpp32;
+	m_image_type = Bpp24;
 }
 
 void Camera::prepareAcq() {
@@ -315,7 +125,7 @@ int Camera::getNbHwAcquiredFrames() {
 void Camera::AcqThread::threadFunction() {
 	DEB_MEMBER_FUNCT();
 	AutoMutex aLock(m_cam.m_cond.mutex());
-	StdBufferCbMgr& buffer_mgr = m_cam.m_bufferCtrlObj.getBuffer();
+//	StdBufferCbMgr& buffer_mgr = m_cam.m_bufferCtrlObj.getBuffer();
 
 	while (!m_cam.m_quit) {
 		while (m_cam.m_wait_flag && !m_cam.m_quit) {
@@ -352,9 +162,10 @@ void Camera::AcqThread::threadFunction() {
 				}
 				delay = remain;
 			}
+////
+///// This is not finished need to add read/save code.
+////
 			if (m_cam.m_acq_frame_nb < m_cam.m_nb_frames-1) {
-//				m_cam.pause();
-//				m_cam.restart();
 				DEB_TRACE() << "acq thread continuing";
 			} else {
 				DEB_TRACE() << "acq thread histogram stop";
@@ -362,14 +173,6 @@ void Camera::AcqThread::threadFunction() {
 			}
 			aLock.lock();
 			++m_cam.m_acq_frame_nb;
-
-//			int completed_frames;
-//			do {
-//				m_cam.checkProgress(completed_frames);
-//				DEB_TRACE() << DEB_VAR2(completed_frames, m_cam.m_acq_frame_nb);
-//			}
-//			while (completed_frames < m_cam.m_acq_frame_nb);
-//			m_cam.m_read_wait_flag = false;
 			DEB_TRACE() << "acq thread signal read thread: " << m_cam.m_acq_frame_nb << " frames collected";
 			m_cam.m_cond.broadcast();
 			aLock.unlock();
@@ -403,6 +206,8 @@ void Camera::getImageType(ImageType& type) {
 	getNbits(nbits);
 	switch(nbits) {
 	case BPP4:
+		type = Bpp4;
+		break;
 	case BPP8:
 		type = Bpp8;
 		break;
@@ -1292,7 +1097,7 @@ std::map<Camera::ServerCmd, std::string> Camera::serverCmdMap = {
 	{TESTPATTERN, "testpattern"},
 };
 
-ostream& operator <<(ostream& os, Camera::Polarity polarity) {
+ostream& operator <<(ostream& os, Camera::Polarity &polarity) {
 	const char* name = "Unknown";
 	switch (polarity) {
 	case Camera::RISING_EDGE: name = "Rising Edge";	break;
@@ -1301,7 +1106,7 @@ ostream& operator <<(ostream& os, Camera::Polarity polarity) {
 	return os << name;
 }
 
-ostream& operator <<(ostream& os, Camera::Settings settings) {
+ostream& operator <<(ostream& os, Camera::Settings &settings) {
 	const char* name = "Unknown";
 	switch (settings) {
 	case Camera::Cu: name = "Cu"; break;

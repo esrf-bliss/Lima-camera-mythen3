@@ -33,7 +33,6 @@ using namespace std;
 using namespace lima;
 using namespace lima::Mythen3;
 
-
 Mythen3Net::Mythen3Net() {
 	DEB_CONSTRUCTOR();
 	// Ignore the sigpipe we get we try to send quit to
