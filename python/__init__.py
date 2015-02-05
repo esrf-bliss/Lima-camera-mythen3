@@ -31,7 +31,7 @@ from Lima import Core
 
 cleanup_data = module_helper.load_dep_cleanup(cleanup_data)
 
-from Lima.Mythen.limamythen import Mythen as _P
+from Lima.Mythen3.limamythen3 import Mythen3 as _P
 globals().update(_P.__dict__)
 
 module_helper.load_cleanup(cleanup_data)

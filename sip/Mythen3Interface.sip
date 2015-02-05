@@ -22,65 +22,15 @@
 
 namespace Mythen3 {
 
-class DetInfoCtrlObj: public HwDetInfoCtrlObj {
+
+class Interface : HwInterface {
 
 %TypeHeaderCode
 #include "Mythen3Interface.h"
 %End
 
 public:
-	DetInfoCtrlObj(Camera& cam);
-	virtual ~DetInfoCtrlObj();
-
-	virtual void getMaxImageSize(Size& max_image_size /Out/);
-	virtual void getDetectorImageSize(Size& det_image_size /Out/);
-
-	virtual void getDefImageType(ImageType& def_image_type /Out/);
-	virtual void getCurrImageType(ImageType& curr_image_type /Out/);
-	virtual void setCurrImageType(ImageType  curr_image_type);
-
-	virtual void getPixelSize(double& x_size /Out/, double& y_size /Out/);
-	virtual void getDetectorType(std::string& det_type /Out/);
-	virtual void getDetectorModel(std::string& det_model /Out/);
-
-	virtual void registerMaxImageSizeCallback(HwMaxImageSizeCallback& cb);
-	virtual void unregisterMaxImageSizeCallback(HwMaxImageSizeCallback& cb);
-};
-
-class SyncCtrlObj: public HwSyncCtrlObj {
-
-%TypeHeaderCode
-#include "Mythen3Interface.h"
-%End
-
-public:
-	SyncCtrlObj(Camera& cam);
-	virtual ~SyncCtrlObj();
-
-	virtual bool checkTrigMode(TrigMode trig_mode);
-	virtual void setTrigMode(TrigMode  trig_mode);
-	virtual void getTrigMode(TrigMode& trig_mode /Out/);
-
-	virtual void setExpTime(double  exp_time);
-	virtual void getExpTime(double& exp_time /Out/);
-
-	virtual void setLatTime(double  lat_time);
-	virtual void getLatTime(double& lat_time /Out/);
-
-	virtual void setNbHwFrames(int  nb_frames);
-	virtual void getNbHwFrames(int& nb_frames /Out/);
-
-	virtual void getValidRanges(HwSyncCtrlObj::ValidRangesType& valid_ranges /Out/);
-};
-
-class Interface: public HwInterface {
-
-%TypeHeaderCode
-#include "Mythen3Interface.h"
-%End
-
-public:
-	Interface(Camera& cam);
+	Interface(Mythen3::Camera& cam);
 	virtual ~Interface();
 
 	virtual void getCapList(std::vector<HwCap> &cap_list /Out/) const;
@@ -92,4 +42,4 @@ public:
 	virtual int getNbHwAcquiredFrames();
 };
 
-} // namespace Mythen3
+}; // namespace Mythen3
