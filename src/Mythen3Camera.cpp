@@ -31,8 +31,6 @@ using namespace lima;
 using namespace lima::Mythen3;
 using namespace std;
 
-const string PredefinedSettings[] = {"Cu", "Mo", "Cr", "Ag"};
-
 //---------------------------
 //- utility thread
 //---------------------------
@@ -682,7 +680,9 @@ void Camera::setKthreshEnergy(float kthresh, float energy) {
  */
 void Camera::setPredefinedSettings(Settings settings) {
 	DEB_MEMBER_FUNCT();
-	requestSet(SETTINGS, PredefinedSettings[settings]);
+	stringstream ss;
+	ss << settings;
+	requestSet(SETTINGS, ss.str());
 }
 
 /**

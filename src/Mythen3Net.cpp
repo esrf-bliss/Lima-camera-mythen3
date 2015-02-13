@@ -23,6 +23,8 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <signal.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "Mythen3Net.h"
 #include "lima/ThreadUtils.h"
