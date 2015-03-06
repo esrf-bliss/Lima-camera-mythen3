@@ -24,6 +24,7 @@
 #define MYTHEN3INTERFACE_H
 
 #include "lima/HwInterface.h"
+#include "lima/HwDetInfoCtrlObj.h"
 #include "Mythen3Camera.h"
 
 using namespace std;

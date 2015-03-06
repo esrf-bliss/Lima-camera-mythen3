@@ -30,7 +30,7 @@ class Camera {
 %End
 
 public:
-	Camera(std::string hostname, int tcpPort, int npixels, bool simulate);
+	Camera(std::string hostname, int tcpPort, bool simulate);
 	~Camera();
 
 	enum Status {
@@ -103,9 +103,9 @@ public:
 	};
 
 	void getAssemblyDate(std::string& date /Out/);
-	void getBadChannels(int *badChannels /Out/, int len);
+	void getBadChannels(Data& badChannels /Out/);
 	void getCommandId(int& commandId /Out/);
-	void getSerialNumbers(int* serialNums /Out/, int len);
+	void getSerialNumbers(std::vector<int>& serialNums /Out/);
 	void getMaxNbModules(int& maxmod /Out/);
 	void getSensorMaterial(int& sensor /Out/);
 	void getSensorThickness(int& thickness /Out/);
@@ -115,8 +115,8 @@ public:
 	void setModule(int module);
 	void getNbModules(int& nbModule /Out/);
 	void setNbModules(int nbModule);
-	void getLatency(long long& time /Out/);
-	void setLatency(long long time);
+	void getDelayAfterFrame(long long& time /Out/);
+	void setDelayAfterFrame(long long time);
 	void getFrames(int& frames /Out/);
 	void setFrames(int frames);
 	void getNbits(Nbits& nbits /Out/);
@@ -124,29 +124,30 @@ public:
 	void getTime(long long& time /Out/);
 	void setTime(long long time);
 	void getHwStatus(Status& status /Out/);
-	void getEnergy(float* energy /Out/, int len);
+	void getEnergy(std::vector<float>& energy /Out/);
 	void setEnergy(float energy);
 	void getEnergyMax(float& energy /Out/);
 	void getEnergyMin(float& energy /Out/);
-	void getKThresh(float* kthresh /Out/, int len);
+	void getKThresh(std::vector<float>& kthresh /Out/);
 	void setKThresh(float kthresh);
 	void getKThreshMax(float& kthresh /Out/);
 	void getKThreshMin(float& kthresh /Out/);
-	void setKthreshEnergy(float kthresh, float energy);
+	void setKThreshEnergy(float kthresh, float energy);
 	void setPredefinedSettings(Settings settings);
 	void getBadChannelInterpolation(Switch& enable /Out/);
 	void setBadChannelInterpolation(Switch enable);
 	void getFlatFieldCorrection(Switch& enable /Out/);
 	void setFlatFieldCorrection(Switch enable);
 	void getCutoff(int& cutoff /Out/);
-	void getFlatField(int& flatfield /Out/);
+	void getFlatField(Data& flatfield /Out/);
 	void getRateCorrection(Switch& enable /Out/);
 	void setRateCorrection(Switch enable);
-	void getTau(int& tau /Out/);
+	void getTau(std::vector<float>& tau /Out/);
 	void setTau(float tau);
 	void getGates(int& gates /Out/);
 	void setGates(int gates);
-	void setDelayAfterTrigger(long long time);
+	void getDelayBeforeFrame(long long& time /Out/);
+	void setDelayBeforeFrame(long long time);
 	void getContinuousTrigger(Switch& enable /Out/);
 	void setContinuousTrigger(Switch enable);
 	void getGateMode(Switch& enable /Out/);
@@ -157,14 +158,17 @@ public:
 	void setInputSignalPolarity(Polarity polarity);
 	void getOutputSignalPolarity(Polarity& polarity /Out/);
 	void setOutputSignalPolarity(Polarity polarity);
+	void setUseRawReadout(Switch enable);
+	void getUseRawReadout(Switch& enable /Out/);
+	void getTestPattern(Data& data /Out/);
 	void resetMythen();
 	void start();
 	void stop();
 	void logStart();
-	void logStop(int& logSize /Out/);
-//	void logRead(char* buff /Out/, int logSize);
-	void readout(int* data /Out/, int len);
-	void readoutraw(int* data /Out/, int len);
+	void logStop();
+	void logRead();
+	void readFrame(Data& mythenData /Out/, int frame_nb);
+	void readData(Data& mythenData /Out/);
 };
 
 }; // namespace Mythen3

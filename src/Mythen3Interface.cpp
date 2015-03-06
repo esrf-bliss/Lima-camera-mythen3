@@ -54,8 +54,7 @@ void DetInfoCtrlObj::getDetectorImageSize(Size& size) {
 
 void DetInfoCtrlObj::getDefImageType(ImageType& image_type) {
 	DEB_MEMBER_FUNCT();
-// TODO change to Bpp24 when available
-	image_type = Bpp32;
+	image_type = Bpp24;
 }
 
 void DetInfoCtrlObj::getCurrImageType(ImageType& image_type) {
@@ -245,27 +244,6 @@ void Interface::getStatus(StatusType& status) {
 	DEB_MEMBER_FUNCT();
 	status.acq = m_cam.isAcqRunning() ? AcqRunning : AcqReady;
 	status.det_mask = DetExposure | DetReadout | DetLatency;
-
-//	Camera::Status mythen_status;
-//	m_cam.getStatus(mythen_status);
-//	switch (mythen_status) {
-//	case Camera::Ready:
-//		status.acq = AcqReady;
-//		status.det = DetIdle;
-//		break;
-//	case Camera::Exposure:
-//		status.det = DetExposure;
-//		status.acq = AcqRunning;
-//		break;
-//	case Camera::Readout:
-//		status.det = DetReadout;
-//		status.acq = AcqRunning;
-//		break;
-//	case Camera::Latency:
-//		status.det = DetLatency;
-//		status.acq = AcqRunning;
-//		break;
-//	}
 }
 
 int Interface::getNbHwAcquiredFrames() {

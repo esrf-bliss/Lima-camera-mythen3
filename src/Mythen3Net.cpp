@@ -50,6 +50,7 @@ Mythen3Net::Mythen3Net() {
 
 Mythen3Net::~Mythen3Net() {
 	DEB_DESTRUCTOR();
+	disconnectFromServer();
 }
 
 void Mythen3Net::connectToServer(const string hostname, int port) {

@@ -24,18 +24,21 @@
 #define MYTHEN3CAMERA_H
 
 #include <map>
+#include <vector>
 #include "lima/Debug.h"
 #include "lima/Constants.h"
 #include "lima/HwMaxImageSizeCallback.h"
 #include "lima/HwBufferMgr.h"
 #include "lima/ThreadUtils.h"
+#include "processlib/Data.h"
 #include "Mythen3Net.h"
 
 namespace lima {
 namespace Mythen3 {
 
-const int xPixelSize = 50; // um
-const int yPixelSize = 8000; // um
+const int XPixelSize = 50; // um
+const int YPixelSize = 8000; // um
+const int PixelsPerModule = 1280;
 
 class BufferCtrlObj;
 
@@ -47,7 +50,7 @@ class Camera {
 DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Mythen3");
 
 public:
-	Camera(std::string hostname, int tcpPort, int npixels=1280, bool simulate=false);
+	Camera(std::string hostname, int tcpPort, bool simulate=false);
 	~Camera();
 
 	enum Status {
@@ -120,9 +123,9 @@ public:
 	};
 
 	void getAssemblyDate(string& date);
-	void getBadChannels(int *badChannels, int len);
+	void getBadChannels(Data& badChannels);
 	void getCommandId(int& commandId);
-	void getSerialNumbers(int* serialNums, int len);
+	void getSerialNumbers(std::vector<int>& serialNums);
 	void getMaxNbModules(int& maxmod);
 	void getSensorMaterial(int& sensor);
 	void getSensorThickness(int& thickness);
@@ -132,8 +135,8 @@ public:
 	void setModule(int module);
 	void getNbModules(int& nbModule);
 	void setNbModules(int nbModule);
-	void getLatency(long long& time);
-	void setLatency(long long time);
+	void getDelayAfterFrame(long long& time);
+	void setDelayAfterFrame(long long time);
 	void getFrames(int& frames);
 	void setFrames(int frames);
 	void getNbits(Nbits& nbits);
@@ -141,29 +144,30 @@ public:
 	void getTime(long long& time);
 	void setTime(long long time);
 	void getHwStatus(Status& status);
-	void getEnergy(float* energy, int len);
+	void getEnergy(std::vector<float>& energy);
 	void setEnergy(float energy);
 	void getEnergyMax(float& energy);
 	void getEnergyMin(float& energy);
-	void getKThresh(float* kthresh, int len);
+	void getKThresh(std::vector<float>& kthresh);
 	void setKThresh(float kthresh);
 	void getKThreshMax(float& kthresh);
 	void getKThreshMin(float& kthresh);
-	void setKthreshEnergy(float kthresh, float energy);
+	void setKThreshEnergy(float kthresh, float energy);
 	void setPredefinedSettings(Settings settings);
 	void getBadChannelInterpolation(Switch& enable);
 	void setBadChannelInterpolation(Switch enable);
 	void getFlatFieldCorrection(Switch& enable);
 	void setFlatFieldCorrection(Switch enable);
 	void getCutoff(int& cutoff);
-	void getFlatField(int& flatfield);
+	void getFlatField(Data& flatfield);
 	void getRateCorrection(Switch& enable);
 	void setRateCorrection(Switch enable);
-	void getTau(int& tau);
+	void getTau(std::vector<float>& tau);
 	void setTau(float tau);
 	void getGates(int& gates);
 	void setGates(int gates);
-	void setDelayAfterTrigger(long long time);
+	void getDelayBeforeFrame(long long& time);
+	void setDelayBeforeFrame(long long time);
 	void getContinuousTrigger(Switch& enable);
 	void setContinuousTrigger(Switch enable);
 	void getGateMode(Switch& enable);
@@ -174,14 +178,17 @@ public:
 	void setInputSignalPolarity(Polarity polarity);
 	void getOutputSignalPolarity(Polarity& polarity);
 	void setOutputSignalPolarity(Polarity polarity);
+	void setUseRawReadout(Switch enable);
+	void getUseRawReadout(Switch& enable);
+	void getTestPattern(Data& data);
 	void resetMythen();
 	void start();
 	void stop();
 	void logStart();
-	void logStop(int& logSize);
-	void logRead(char* buff, int logSize);
-	void readout(int* data, int len);
-	void readoutraw(int* data, int len);
+	void logStop();
+	void logRead();
+	void readFrame(Data& mythenData, int frame_nb);
+	void readData(Data& mythenData);
 
 
 private:
@@ -189,18 +196,20 @@ private:
 	Mythen3Net* m_mythen;
 	string m_hostname;
 	int m_tcpPort;
-	int m_npixels;
-	int m_nrasters;
 	bool m_simulated;
 	bool m_thread_running;
 	bool m_wait_flag;
 	bool m_quit;
+	int m_image_width;
 	int m_acq_frame_nb; // nos of frames acquired
 	int m_nb_frames; // nos of frame to acquire
 	double m_exp_time;
 	TrigMode m_trigger_mode;
 	ImageType m_image_type;
 	mutable Cond m_cond;
+	bool m_use_raw_readout;
+	Nbits m_nbits;
+	int m_logSize;
 
 	class AcqThread;
 
@@ -209,29 +218,42 @@ private:
 	// Buffer control object
 	SoftBufferCtrlObj m_bufferCtrlObj;
 
-	// V3.0.0 defines deprecated commands which are not included in this version
+	enum Action {GET, SET, CMD};
+#if __GNUC_MINOR__ < 4
+public:
+#endif
+	// V3.0.0 defines deprecated commands which are not included in this implementation
 	enum ServerCmd {ASSEMBLYDATE, BADCHANNELS, COMMANDID, MODNUM, MODULE, NMAXMODULES, NMODULES, SENSORMATERIAL,
 		SENSORTHICKNESS, SYSTEMNUM, VERSION, RESET, DELAFTER, FRAMES, NBITS, STATUS, TIME, READOUT, READOUTRAW,
 		START, STOP, ENERGY, ENERGYMAX, ENERGYMIN, KTHRESH, KTHRESHMAX, KTHRESHMIN, KTHRESHENERGY, SETTINGS,
 		BADCHANNELINTERPOLATION, FLATFIELDCORRECTION, CUTOFF, FLATFIELD, RATECORRECTION, TAU, CONTTRIGEN, DELBEF,
 		GATEEN, GATES, CONTTRIG, GATE, INPOL, OUTPOL, TRIG, TRIGEN, LOGSTART, LOGSTOP, LOGREAD, TESTPATTERN};
+#if __GNUC_MINOR__ < 4
+private:
+#endif
 
-	string findCmd(ServerCmd cmd);
+	string findCmd(Action action, ServerCmd cmd);
 	template<typename T> void checkReply(T rc);
 	template<typename T> void requestSet(ServerCmd cmd, T value);
 	template<typename T> void requestSet(ServerCmd cmd, T value1, T value2);
 	template<typename T> void requestGet(ServerCmd cmd, T& value);
 	template<typename T> void requestGet(ServerCmd cmd, T* value, int len);
-	void requestCmd(ServerCmd cmd, int* value, int len);
+	template<typename T> void requestCmd(ServerCmd cmd, T* value, int len);
 	void requestGet(ServerCmd cmd, string& reply, int len);
 	void requestCmd(ServerCmd cmd);
+	void sendCmd(Action action, ServerCmd cmd);
+	void sendCmd(Action action, ServerCmd cmd, uint8_t* recvBuf, int len);
+	template<typename T> void sendCmd(Action action, ServerCmd cmd, T value);
+	template<typename T> void sendCmd(Action action, ServerCmd cmd, T value1, T value2);
+	void simulate(Action action, ServerCmd cmd, uint8_t* recvBuf, int len);
+	void readout(uint32_t* data, int len);
+	void readoutRaw(uint32_t* data, int len);
+	void decodeRaw(Nbits nbits, uint32_t* rawData, int image_width);
 
 	static std::map<int, std::string> serverStatusMap;
 	static std::map<ServerCmd, std::string> serverCmdMap;
-	static std::map<ServerCmd, std::string> getServerCmdMap;
-	static std::map<ServerCmd, std::string> setServerCmdMap;
-
 };
+
 std::ostream& operator <<(std::ostream& os, Camera::Polarity const &polarity);
 std::ostream& operator <<(std::ostream& os, Camera::Settings const &settings);
 
