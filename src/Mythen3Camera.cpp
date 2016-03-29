@@ -86,7 +86,7 @@ void Camera::reset() {
 	DEB_MEMBER_FUNCT();
 	stopAcq();
 	resetMythen();
-	m_image_type = Bpp24;
+	m_image_type = Bpp32;
 }
 
 void Camera::prepareAcq() {
