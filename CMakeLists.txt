@@ -21,36 +21,33 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
+set(NAME "mythen3")
 
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--add-needed")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 #SOURCES
-set(mythen3_srcs src/Mythen3Interface.cpp  src/Mythen3Camera.cpp
+set(${NAME}_srcs src/Mythen3Interface.cpp  src/Mythen3Camera.cpp
 	src/Mythen3Net.cpp)
 	 
-file(STRINGS "VERSION" mythen3_vers)
-add_library(limamythen3 SHARED ${mythen3_srcs})
+add_library(lima${NAME} SHARED ${${NAME}_srcs})
 
 #INCLUDEs
-target_include_directories(limamythen3 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_include_directories(limamythen3 PUBLIC "${CMAKE_SOURCE_DIR}/third-party/Processlib/sip/")
+target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(lima${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/third-party/Processlib/sip/")
 
 #LIBRARIES
 
-target_link_libraries(limamythen3 limacore)
+target_link_libraries(lima${NAME} limacore)
 
+include(CameraVERSION)
+install(TARGETS lima${NAME} LIBRARY DESTINATION lib)
 
-set_target_properties(limamythen3 PROPERTIES VERSION ${mythen3_vers} SOVERSION "1")
-
-install(TARGETS limamythen3 LIBRARY DESTINATION lib)
-
-if(COMPILE_SIP)
-    set(NAME "mythen3")
+if(LIMA_ENABLE_PYTHON)
     include(CameraRunSIP)
     install(FILES python/__init__.py DESTINATION "${PYTHON_SITE_PACKAGES_DIR}/Lima/Mythen3")
 endif()
 
-if(COMPILE_TEST)
+if(LIMA_ENABLE_TEST)
 	add_subdirectory(test/)
 endif()
