@@ -24,4 +24,4 @@
 
 set(test_src test_Mythen3_decode test_Mythen3_camera)
 
-include(TestCamera)
+limatools_run_camera_tests("${test_src}" ${NAME})
