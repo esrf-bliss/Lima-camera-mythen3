@@ -31,6 +31,8 @@
 #include "Mythen3Interface.h"
 #include "lima/Debug.h"
 
+#include <unistd.h>
+
 using namespace std;
 using namespace lima;
 using namespace lima::Mythen3;
